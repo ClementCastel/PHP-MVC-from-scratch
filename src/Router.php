@@ -2,6 +2,8 @@
 
 namespace App;
 
+use AltoRouter;
+
 class Router {
 
     /**
@@ -21,7 +23,7 @@ class Router {
     public function __construct(string $viewPath)
     {
         $this->viewPath = $viewPath;
-        $this->router = new \AltoRouter();
+        $this->router = new AltoRouter();
     }
 
     public function get (string $url, string $view, ?string $name = null) : self
