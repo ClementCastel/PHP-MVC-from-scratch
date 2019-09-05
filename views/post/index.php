@@ -1,32 +1,23 @@
 <?php
+
+use App\Connection;
 use App\Helpers\Text;
 use App\Model\Post;
+use App\URL;
 
 $title = "Mon blog";
 
-$pdo = new PDO('mysql:dbname=blogmvc;host=127.0.0.1', 'root','root', [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-]);
+$pdo = Connection::getPDO();
+
 $count = (int)$pdo->query('SELECT COUNT(id) FROM post')->fetch(PDO::FETCH_NUM)[0];
 
 $perPages = 12;
 $pages = ceil($count / $perPages);
 
-$page = $_GET['page'] ?? 1;
-if (!filter_var($page, FILTER_VALIDATE_INT)) throw new Exception('Numéro de page invalide');
-if ($page === "1") {
-    header('Location: ' . $router->url('home'));
-    http_response_code(301);
-    exit();
-}
-$currentPage = (int)$page;
 
-if ($currentPage < 1 || $currentPage > $pages) {
-    throw new Exception ("Numéro de page invalide");
-}
+$currentPage = URL::getPositiveInt('page', 1);
 
-
-
+if ($currentPage > $pages) throw new Exception('La page demandée n\'existe pas');
 
 $query = $pdo->query('SELECT * FROM post ORDER BY created_at DESC LIMIT ' . $perPages . ' OFFSET ' . ($currentPage-1) * $perPages);
 
